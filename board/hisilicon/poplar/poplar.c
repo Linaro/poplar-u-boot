@@ -54,6 +54,10 @@ int dram_init(void)
 	return 0;
 }
 
+/* Base address and size of ARM-TF image that persists in memory */
+#define ATF_BL31_BASE	0x00129000
+#define ATF_BL31_SIZE	0x00008020
+
 int dram_init_banksize(void)
 {
 	const struct {
@@ -63,8 +67,8 @@ int dram_init_banksize(void)
 	} reserved = {
 		/* ATF PSCI runs in DDR (no SRAM available for it)  */
 		.name = "atf-bl31",
-		.start = 0x129000,
-		.end =  0x129000 + 0x8020,
+		.start = ATF_BL31_BASE,
+		.end = ATF_BL31_BASE + ATF_BL31_SIZE,
 	};
 
 	gd->bd->bi_dram[0].start = 0x0;
