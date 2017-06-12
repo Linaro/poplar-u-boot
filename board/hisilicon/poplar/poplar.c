@@ -54,28 +54,21 @@ int dram_init(void)
 	return 0;
 }
 
-/* Base address and size of ARM-TF image that persists in memory */
-#define ATF_BL31_BASE	0x0002A000
-#define ATF_BL31_SIZE	0x00014000
+/*
+ * The kernel doesn't use memory before its load address, so we just
+ * pretend it isn't there.  We previously reserved the space used by
+ * BL31 so PSCI code could persist in memory and be left alone by
+ * the kernel.  That led to a problem when mapping memory in older
+ * kernels.  That PSCI code now lies in memory below the kernel load
+ * offset; it therefore won't be touched by the kernel, and by not
+ * specially reserving it we avoid the mapping problem as well.
+ */
+#define KERNEL_TEXT_OFFSET	0x00080000
 
 int dram_init_banksize(void)
 {
-	const struct {
-		phys_addr_t start;
-		phys_addr_t end;
-		char *name;
-	} reserved = {
-		/* ATF PSCI runs in DDR (no SRAM available for it)  */
-		.name = "atf-bl31",
-		.start = ATF_BL31_BASE,
-		.end = ATF_BL31_BASE + ATF_BL31_SIZE,
-	};
-
-	gd->bd->bi_dram[0].start = 0x0;
-	gd->bd->bi_dram[0].size = reserved.start;
-
-	gd->bd->bi_dram[1].start = reserved.end;
-	gd->bd->bi_dram[1].size = gd->ram_size - reserved.end;
+	gd->bd->bi_dram[0].start = KERNEL_TEXT_OFFSET;
+	gd->bd->bi_dram[0].size = gd->ram_size - gd->bd->bi_dram[0].start;
 
 	return 0;
 }
