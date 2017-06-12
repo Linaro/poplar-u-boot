@@ -55,8 +55,8 @@ int dram_init(void)
 }
 
 /* Base address and size of ARM-TF image that persists in memory */
-#define ATF_BL31_BASE	0x00069000
-#define ATF_BL31_SIZE	0x00018000
+#define ATF_BL31_BASE	0x0002A000
+#define ATF_BL31_SIZE	0x00014000
 
 int dram_init_banksize(void)
 {
