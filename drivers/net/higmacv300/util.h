@@ -8,6 +8,8 @@
 #ifndef __HIGMAC_UTIL_H__
 #define __HIGMAC_UTIL_H__
 
+#include "higmac.h"
+
 #define HIGMAC_TRACE_LEVEL 8
 
 #define higmac_trace(level, msg...) do { \
@@ -26,33 +28,57 @@
 
 #define higmac_assert(cond) do { \
 	if (!(cond)) \
-	    printf("Assert:higmac:%s:%d\n", \
-		   __FILE__, \
-		   __LINE__);\
+	    printf("Assert:higmac:%s:%d\n", __FILE__, __LINE__);\
     } while (0)
 
-#define higmac_readl(ld, ofs) ({ volatile unsigned long reg = readl((ld)->iobase + (ofs)); \
-			higmac_trace(2, "readl(0x%04X) = 0x%08lX", (ofs), reg); \
-			reg; })
+static inline u32
+higmac_readl(struct higmac_netdev_local *ld, u32 ofs)
+{
+	u32 value = readl(ld->iobase + ofs);
 
-#define higmac_writel(ld, v, ofs) do { writel(v, (ld)->iobase + (ofs)); \
-			higmac_trace(2, "writel(0x%04X) = 0x%08lX", (ofs), (unsigned long)(v)); \
-    } while (0)
+	higmac_trace(2, "readl(0x%04X) = 0x%08X", ofs, value);
 
-#define higmac_writel_bits(ld, v, ofs, bits_desc) do { \
-			unsigned long _bits_desc = bits_desc; \
-			unsigned long _shift = (_bits_desc) >> 16; \
-			volatile unsigned long _reg  = higmac_readl(ld, ofs); \
-			unsigned long _mask = ((_bits_desc & 0x3F) < 32) ? (((1 << (_bits_desc & 0x3F)) - 1) << (_shift)) : 0xffffffff; \
-			higmac_writel(ld, (_reg & (~_mask)) | (((v) << (_shift)) & _mask), ofs); \
-    } while (0)
+	return value;
+}
 
-#define higmac_readl_bits(ld, ofs, bits_desc) ({ \
-			unsigned long _bits_desc = bits_desc; \
-			unsigned long _shift = (_bits_desc) >> 16; \
-			unsigned long _mask = ((_bits_desc & 0x3F) < 32) ? (((1 << (_bits_desc & 0x3F)) - 1) << (_shift)) : 0xffffffff; \
-			(higmac_readl(ld, ofs) & _mask) >> (_shift); })
+static inline void
+higmac_writel(struct higmac_netdev_local *ld, u32 value, u32 ofs)
+{
+	writel(value, ld->iobase + ofs);
+	higmac_trace(2, "writel(0x%04X) = 0x%08X", ofs, value);
+}
 
+/*
+ * Define a bit mask by storing its offset (shift) in the upper
+ * portion and width (nbits) in its lower portion of a 32-bit
+ * "descriptor".
+ */
 #define MK_BITS(shift, nbits) ((((shift) & 0x1F) << 16) | ((nbits) & 0x3F))
+
+static inline u32
+higmac_readl_bits(struct higmac_netdev_local *ld, u32 ofs, u32 desc)
+{
+	u32 bits = desc & 0x3f;
+	u32 shift = desc >> 16;
+	u32 mask = bits < 32 ? ((1 << bits) - 1) << shift : 0xffffffff;
+	u32 val = higmac_readl(ld, ofs);
+
+	return (val & mask) >> shift;
+}
+
+static inline void
+higmac_writel_bits(struct higmac_netdev_local *ld, u32 value, u32 ofs, u32 desc)
+{
+	u32 bits = desc & 0x3f;
+	u32 shift = desc >> 16;
+	u32 mask = bits < 32 ? ((1 << bits) - 1) << shift : 0xffffffff;
+	u32 update = (value << shift) & mask;
+	u32 val;
+
+	/* Read the old value, update it, and write it back */
+	val = higmac_readl(ld, ofs);
+	val = (val & ~mask) | update;
+	higmac_writel(ld, val, ofs);
+}
 
 #endif
