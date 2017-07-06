@@ -60,7 +60,7 @@ higmac_readl_bits(struct higmac_netdev_local *ld, u32 ofs, u32 desc)
 {
 	u32 bits = desc & 0x3f;
 	u32 shift = desc >> 16;
-	u32 mask = bits < 32 ? ((1 << bits) - 1) << shift : 0xffffffff;
+	u32 mask = (bits < 32 ? ((1 << bits) - 1) : 0xffffffff) << shift;
 	u32 val = higmac_readl(ld, ofs);
 
 	return (val & mask) >> shift;
@@ -71,7 +71,7 @@ higmac_writel_bits(struct higmac_netdev_local *ld, u32 value, u32 ofs, u32 desc)
 {
 	u32 bits = desc & 0x3f;
 	u32 shift = desc >> 16;
-	u32 mask = bits < 32 ? ((1 << bits) - 1) << shift : 0xffffffff;
+	u32 mask = (bits < 32 ? ((1 << bits) - 1) : 0xffffffff) << shift;
 	u32 update = (value << shift) & mask;
 	u32 val;
 
