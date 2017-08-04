@@ -79,7 +79,8 @@
 			"initrd_high=0xffffffffffffffff\0"		\
 			"android_addr_r=0x30000000\0"			\
 			"android_bootargs=androidboot.hardware=poplar " \
-			    "androidboot.selinux=permissive\0"		\
+			    "androidboot.selinux=permissive "		\
+			    "mmz=ddr,0,0,60M\0"				\
 			"setupa=setenv bootargs $android_bootargs; "	\
 			    "usb start; "				\
 			    "fatload usb 0:1 ${kernel_addr_r} Image; "	\
