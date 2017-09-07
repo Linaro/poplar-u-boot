@@ -480,7 +480,8 @@ struct icmp_hdr {
  * the maxium Ethernet frame size as specified by the Ethernet
  * standard including the 802.1Q tag (VLAN tagging).
  * maximum packet size =  1522
- * maximum packet size and multiple of 32 bytes =  1536
+ * maximum packet size (and multiple of every power-of-2 until 512)
+ *                     =  1536
  */
 #define PKTSIZE			1522
 #define PKTSIZE_ALIGN		1536
