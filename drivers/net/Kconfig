@@ -365,4 +365,9 @@ config FEC2_PHY_NORXERR
 	  The PHY does not have a RXERR line (RMII only).
 	  (so program the FEC to ignore it).
 
+config NET_HIGMACV300
+       bool "Hisilicon Gigabit Controller"
+       help
+       This driver provides Hisilicon SoCs network support
+
 endif # NETDEVICES

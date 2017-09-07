@@ -7,6 +7,7 @@
 
 #include <dm.h>
 #include <common.h>
+#include <netdev.h>
 #include <asm/io.h>
 #include <dm/platform_data/serial_pl01x.h>
 #include <asm/arch/hi3798cv200.h>
@@ -14,6 +15,8 @@
 #include <asm/armv8/mmu.h>
 
 DECLARE_GLOBAL_DATA_PTR;
+
+extern void eth_config_init(void);
 
 static struct mm_region poplar_mem_map[] = {
 	{
@@ -46,6 +49,23 @@ U_BOOT_DEVICE(poplar_serial) = {
 	.name = "serial_pl01x",
 	.platdata = &serial_platdata,
 };
+
+
+int misc_init_r(void)
+{
+
+	return 0;
+}
+
+int board_eth_init(bd_t *bd)
+{
+	int ret = 0;
+
+	ret = higmac_initialize(bd);
+
+	return ret;
+}
+
 
 int checkboard(void)
 {
@@ -171,4 +191,3 @@ int board_init(void)
 
 	return 0;
 }
-
