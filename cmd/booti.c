@@ -172,6 +172,7 @@ int do_booti(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	ulong fdt_len = 0;
 	ulong ramdisk_addr_env = 0;
 	ulong fdt_addr_env = 0;
+	int i;
 
 	if (argc == 4) {
 		debug("normal %s %s %s %s\n", argv[0], argv[1], argv[2], argv[3]);
@@ -218,7 +219,7 @@ int do_booti(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	const int new_argc = 4;
 	char *new_argv[new_argc];
 
-	for (int i = 0; i < new_argc; i++) {
+	for (i = 0; i < new_argc; i++) {
 		new_argv[i] = (char*) malloc(max_length);
 	}
 
@@ -232,7 +233,7 @@ int do_booti(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 
 	int ret = do_booti_a(cmdtp, flag, new_argc, new_argv);
 
-	for (int i = 0; i < new_argc; i++) {
+	for (i = 0; i < new_argc; i++) {
 		free(new_argv[i]);
 	}
 
