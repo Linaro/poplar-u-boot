@@ -123,10 +123,6 @@ static void usb2_phy_config(void)
 		0xa11140,
 		/* Comp mode select */
 		0xa11041,
-		/* adjust eye diagram */
-		0xa0098c,
-		/* adjust eye diagram */
-		0xa10a0a,
 	};
 	int i;
 
