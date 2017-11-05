@@ -554,7 +554,8 @@ static void cb_download(struct usb_ep *ep, struct usb_request *req)
 	fastboot_tx_write_str(response);
 }
 
-static void do_bootm_on_complete(struct usb_ep *ep, struct usb_request *req)
+static void __maybe_unused do_bootm_on_complete(struct usb_ep *ep,
+						struct usb_request *req)
 {
 	char boot_addr_start[12];
 	char *bootm_args[] = { "bootm", boot_addr_start, NULL };
@@ -568,9 +569,28 @@ static void do_bootm_on_complete(struct usb_ep *ep, struct usb_request *req)
 	do_reset(NULL, 0, 0, NULL);
 }
 
+static void __maybe_unused do_booti_on_complete(struct usb_ep *ep,
+						struct usb_request *req)
+{
+	char boot_addr_start[12];
+	char *booti_args[] = { "booti", boot_addr_start, NULL };
+
+	puts("Booting kernel..\n");
+
+	sprintf(boot_addr_start, "0x%lx", (long)CONFIG_FASTBOOT_BUF_ADDR);
+	do_booti(NULL, 0, 2, booti_args);
+
+	/* This only happens if image is somehow faulty so we start over */
+	do_reset(NULL, 0, 0, NULL);
+}
+
 static void cb_boot(struct usb_ep *ep, struct usb_request *req)
 {
+#ifdef CONFIG_FASTBOOT_BOOTM
 	fastboot_func->in_req->complete = do_bootm_on_complete;
+#else
+	fastboot_func->in_req->complete = do_booti_on_complete;
+#endif
 	fastboot_tx_write_str("OKAY");
 }
 
