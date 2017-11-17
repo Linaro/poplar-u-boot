@@ -87,8 +87,8 @@
 			    "fatload usb 0:1 ${fdt_addr_r} hi3798cv200-poplar.dtb; " \
 			    "fatload usb 0:1 ${ramdisk_addr_r} ramdisk.android.uboot\0" \
 			"boota=booti ${kernel_addr_r} ${ramdisk_addr_r} ${fdt_addr_r}\0" \
-			"bootai=part start mmc 0 3 aistart; "		\
-			    "part size mmc 0 3 aisize; "		\
+			"bootai=part start mmc 0 2 aistart; "		\
+			    "part size mmc 0 2 aisize; "		\
 			    "mmc read ${android_addr_r} ${aistart} ${aisize}; " \
 			    "booti ${android_addr_r}\0" \
 			BOOTENV
