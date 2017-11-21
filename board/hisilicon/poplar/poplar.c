@@ -98,7 +98,7 @@ int dram_init(void)
  * problem as well.
  *
  */
-#define KERNEL_TEXT_OFFSET	0x00080000
+#define KERNEL_TEXT_OFFSET	0x02080000
 
 int dram_init_banksize(void)
 {
