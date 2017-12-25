@@ -34,6 +34,7 @@
 
 /* SD/MMC */
 #define CONFIG_BOUNCE_BUFFER
+#define CONFIG_SYS_MMC_MAX_BLK_COUNT		32767
 
 /* Network config */
 #define CONFIG_MII				1
